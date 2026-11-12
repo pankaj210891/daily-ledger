@@ -1,0 +1,18 @@
+export const palette = {
+  background: "#f7f8f6",
+  surface: "#ffffff",
+  ink: "#20372a",
+  text: "#435047",
+  muted: "#849187",
+  line: "#e5ebe4",
+  green: "#245a39",
+  greenSoft: "#edf5ee",
+  orange: "#bd8346",
+  orangeSoft: "#fff4e8",
+  red: "#a34f34",
+  redSoft: "#fff2ed",
+  blue: "#5987bf",
+  blueSoft: "#eaf2fb",
+  purple: "#8066a9",
+  purpleSoft: "#f2edfa",
+};
