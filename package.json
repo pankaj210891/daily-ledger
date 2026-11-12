@@ -2,6 +2,9 @@
   "name": "daily-ledger",
   "version": "1.0.0",
   "private": true,
+  "allowScripts": {
+    "argon2@0.41.1": true
+  },
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "dev:web": "npm run dev --workspace=@daily-ledger/web",
