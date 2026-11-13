@@ -18,12 +18,16 @@ Apply these instructions to every repository task that changes files.
 
 ## Commit and integrate
 
-- Commit only files belonging to the current task, on its task branch. Use a concise conventional commit subject where appropriate.
-- When the user asks to commit and push, push the task branch to `origin`, then merge the completed task branch into `develop` and push `develop` so the shared base stays current.
+- After implementation, leave task changes uncommitted and give the developer a clear summary of the changes and what needs testing or review. Wait for the developer to test/review the implementation and explicitly confirm before staging or committing any task files. Do not treat silence, elapsed time, or a request to implement as confirmation.
+- If the developer requests changes during review, make them on the same task branch and return the updated work for review. Keep the changes uncommitted until the developer confirms the review is complete.
+- After explicit confirmation, stage only files belonging to the task and commit them on the task branch. Use a concise conventional commit subject where appropriate.
+- After the confirmed task commit, push the task branch to `origin`, then merge it into `develop` and push the updated `develop` so the shared base stays current. Do not push or merge before developer confirmation.
 - Prefer fast-forward merges when possible. If a merge conflict occurs, inspect both sides and preserve all valid work. Do not resolve by blindly choosing one side. Review the merged diff and status before pushing.
 - Never merge `develop` into `main` unless the user explicitly asks or requests a production deployment.
 - Leave unrelated local changes untouched. Do not include them just to make a branch clean.
 
 ## Before finishing
 
-Confirm the commit and branch names, whether the task branch and `develop` were pushed, and that `main` was not changed. Report any remaining uncommitted changes that predated the task.
+Before confirmation, report the task branch, changed files, implementation summary, and checks already run (or that review/testing is pending). Leave task changes uncommitted and wait for the developer's review confirmation.
+
+After confirmation and integration, report the task commit and branch, whether the task branch and `develop` were pushed, confirm that `main` was not changed, and report any remaining uncommitted changes that predated the task.
