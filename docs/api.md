@@ -75,6 +75,20 @@ The current entry contract is intentionally generic: `type`, `name`, `category`,
 
 Generic `/entries` remain available for legacy and manual records. They are stored separately and do not contribute to product-based monthly bills. Use `/products`, `/scheduled-deliveries`, and `/bills` for scheduled deliveries and calculated charges; those records retain product and rate history.
 
+## Recurring household expenses
+
+These routes require a bearer access token and derive the household from the verified token.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/recurring-expenses` | List the household's monthly expense policies |
+| POST | `/recurring-expenses` | Create a policy with name, amount, day of month, start date, optional end date, category and notes |
+| PATCH | `/recurring-expenses/:id` | Edit a policy or pause/resume it with `isActive` |
+| DELETE | `/recurring-expenses/:id` | Delete a policy; previously generated ledger entries remain |
+| POST | `/recurring-expenses/generate` | Idempotently create this month's upcoming expense entries (`{ "month": "YYYY-MM" }`) |
+
+Day 29–31 policies are scheduled on the last calendar day in shorter months. The start and optional end dates are inclusive. Paused policies are not generated. Generated entries use the existing `expense` ledger type and `upcoming` status, so normal ledger payment and reporting flows apply. Re-running preparation returns the existing occurrence instead of duplicating it.
+
 ## Web session behavior
 
 The web client keeps the short-lived access token in memory and sends it as a bearer token. On reload or access-token expiry it calls `/auth/refresh`; the API rotates the refresh session in an HttpOnly cookie. Sign-out clears the in-memory access token and revokes the refresh session.

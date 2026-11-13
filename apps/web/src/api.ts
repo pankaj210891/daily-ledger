@@ -95,6 +95,18 @@ export interface EntryInput {
   status?: string;
   notes?: string;
 }
+export interface RecurringExpensePolicy {
+  _id: string;
+  name: string;
+  category: string;
+  amount: number;
+  dayOfMonth: number;
+  startsOn: string;
+  endsOn?: string | null;
+  notes: string;
+  isActive: boolean;
+}
+export type RecurringExpenseInput = Omit<RecurringExpensePolicy, "_id" | "isActive"> & { isActive?: boolean };
 export interface ProductSchedule {
   _id?: string;
   timeSlot: TimeSlot;
@@ -393,6 +405,11 @@ export const api = {
     ).data,
   deleteEntry: (id: string) =>
     request<void>(`/entries/${id}`, { method: "DELETE" }),
+  recurringExpenses: async () => (await request<{ data: RecurringExpensePolicy[] }>("/recurring-expenses")).data,
+  createRecurringExpense: async (input: RecurringExpenseInput) => (await request<{ data: RecurringExpensePolicy }>("/recurring-expenses", { method: "POST", body: JSON.stringify(input) })).data,
+  updateRecurringExpense: async (id: string, patch: Partial<RecurringExpenseInput>) => (await request<{ data: RecurringExpensePolicy }>(`/recurring-expenses/${id}`, { method: "PATCH", body: JSON.stringify(patch) })).data,
+  deleteRecurringExpense: (id: string) => request<void>(`/recurring-expenses/${id}`, { method: "DELETE" }),
+  generateRecurringExpenses: async (month: string) => (await request<{ data: { month: string; occurrences: Entry[]; count: number } }>("/recurring-expenses/generate", { method: "POST", body: JSON.stringify({ month }) })).data,
   auth: async (mode: "signup" | "signin", input: Record<string, string>) =>
     request<{
       data: {

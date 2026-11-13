@@ -103,8 +103,8 @@ For the npm workspaces monorepo, enable Vercel's workspace/root-directory suppor
 
 ## Web UI preview
 
-The web workspace includes a mobile-first household dashboard, product and rate management, per-slot schedule setup, delivery part tracking, calculated monthly bills, linked staff profiles, attendance, and salary statement finalization, advances, payments, and adjustments. Earlier generic staff and salary ledger entries remain separate; legacy staff entries are copied into staff profiles on first read, and unambiguous legacy attendance is linked by exact staff name. Recurring expense policies remain future work.
+The web workspace includes a mobile-first household dashboard, product and rate management, per-slot schedule setup, delivery part tracking, calculated monthly bills, linked staff profiles, attendance, salary statement finalization, advances, payments, adjustments, and monthly recurring expense policies. Earlier generic staff and salary ledger entries remain separate; legacy staff entries are copied into staff profiles on first read, and unambiguous legacy attendance is linked by exact staff name.
 
 ## Current scope
 
-This is an incremental household ledger, not the complete planned product. Dedicated product, scheduled delivery, monthly bill, staff, attendance, live salary calculation, finalized salary statements, and salary transaction APIs are implemented. Recurring expenses and the React Native app remain future work.
+This is an incremental household ledger, not the complete planned product. Dedicated product, scheduled delivery, monthly bill, staff, attendance, live salary calculation, finalized salary statements, salary transaction, and recurring expense APIs are implemented. The React Native app remains future work.
