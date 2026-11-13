@@ -5,6 +5,7 @@ import { money, monthTitle } from "../../lib/formatters";
 import { LoadingState } from "../../components/feedback/LoadingState";
 import { LegacyEntryPanel } from "../../components/LegacyEntryPanel";
 import { MobileMonthPicker } from "../../components/MobileMonthPicker";
+import { SalaryDueList } from "./SalaryDueList";
 
 export function SalaryWorkspace({
   staff,
@@ -125,6 +126,9 @@ export function SalaryWorkspace({
           </div>
         </article>
       </section>
+      {!loading && statements.length > 0 && (
+        <SalaryDueList statements={statements} />
+      )}
       <section className="panel domain-workspace salary-workspace">
         <div className="panel-heading salary-workspace-heading">
           <div>

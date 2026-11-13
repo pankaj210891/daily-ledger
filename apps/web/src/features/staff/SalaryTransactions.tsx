@@ -1,6 +1,15 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { api } from "../../api";
-import { dateLabel, money } from "../../lib/formatters";
+import { dateLabel, householdDateKey, money } from "../../lib/formatters";
+
+function paydayDate(month: string, payDay: number) {
+  const [year, monthNumber] = month.split("-").map(Number);
+  const date = new Date(Date.UTC(year, monthNumber, 1));
+  const nextYear = date.getUTCFullYear();
+  const nextMonth = date.getUTCMonth() + 1;
+  const lastDay = new Date(Date.UTC(nextYear, nextMonth, 0)).getUTCDate();
+  return `${nextYear}-${String(nextMonth).padStart(2, "0")}-${String(Math.min(payDay, lastDay)).padStart(2, "0")}`;
+}
 
 export function SalaryTransactions({
   line,
@@ -14,6 +23,9 @@ export function SalaryTransactions({
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [kind, setKind] = useState<"advance" | "payment" | "adjustment">("payment");
+  const suggestedPayDate = paydayDate(month, line.salaryPayDay);
+  const [date, setDate] = useState(suggestedPayDate);
+  useEffect(() => setDate(suggestedPayDate), [suggestedPayDate]);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -36,6 +48,7 @@ export function SalaryTransactions({
       });
       formElement.reset();
       setKind("payment");
+      setDate(suggestedPayDate);
       await onSaved();
     } catch (issue) {
       setError(
@@ -114,7 +127,11 @@ export function SalaryTransactions({
           <select
             name="kind"
             value={kind}
-            onChange={(event) => setKind(event.target.value as typeof kind)}
+            onChange={(event) => {
+              const nextKind = event.target.value as typeof kind;
+              setKind(nextKind);
+              setDate(nextKind === "payment" ? suggestedPayDate : householdDateKey(new Date()));
+            }}
           >
             <option value="payment">Payment</option>
             <option value="advance">Advance already paid</option>
@@ -126,13 +143,15 @@ export function SalaryTransactions({
           <input name="amount" required type="number" min="0.01" step="0.01" />
         </label>
         <label>
-          Date
+          {kind === "payment" ? "Payment date" : "Transaction date"}
           <input
             name="date"
             required
             type="date"
-            defaultValue={`${month}-${String(new Date(Number(month.slice(0, 4)), Number(month.slice(5, 7)), 0).getDate()).padStart(2, "0")}`}
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
           />
+          {kind === "payment" && <small>Suggested payday for the selected salary month; change it to the actual payment date.</small>}
         </label>
         {kind === "adjustment" && (
           <label className="salary-adjustment-direction">

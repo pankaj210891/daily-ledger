@@ -5545,3 +5545,64 @@ tr:last-child td {
   .recurring-expense-toolbar { align-items: flex-start; flex-direction: column; }
   .recurring-expense-fields { grid-template-columns: 1fr; }
 }
+.salary-due-list {
+  margin: 18px 0;
+}
+.salary-due-rows {
+  display: grid;
+}
+.salary-due-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 1.6fr) repeat(3, minmax(90px, 1fr)) minmax(130px, auto);
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid #e7ebe8;
+}
+.salary-due-person,
+.salary-due-amount {
+  display: grid;
+  gap: 4px;
+}
+.salary-due-person small,
+.salary-due-amount small {
+  color: #748078;
+  font-size: 12px;
+}
+.salary-due-amount strong {
+  font-size: 14px;
+}
+.salary-due-status {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: #f2f4f2;
+  color: #5c665f;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.salary-due-status.is-paid {
+  background: #e8f5ec;
+  color: #28613b;
+}
+.salary-due-status.is-overdue {
+  background: #fff0ed;
+  color: #a33a30;
+}
+.salary-due-status.is-due {
+  background: #fff5df;
+  color: #8a5c12;
+}
+@media (max-width: 720px) {
+  .salary-due-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .salary-due-person {
+    grid-column: 1 / -1;
+  }
+  .salary-due-status {
+    align-self: center;
+  }
+}

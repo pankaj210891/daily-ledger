@@ -19,6 +19,7 @@ const createSchema = z
   .object({
     name: z.string().trim().min(1).max(120),
     joinDate: dateKey,
+    salaryPayDay: z.number().int().min(1).max(31).default(1),
     monthlySalary: z.number().min(0).max(100000000),
     weeklyOffDays,
     weeklyOffPaid: z.boolean(),
@@ -29,6 +30,7 @@ const patchSchema = z
     name: z.string().trim().min(1).max(120).optional(),
     joinDate: dateKey.optional(),
     endDate: dateKey.nullable().optional(),
+    salaryPayDay: z.number().int().min(1).max(31).optional(),
     isActive: z.boolean().optional(),
     weeklyOffDays: weeklyOffDays.optional(),
     weeklyOffPaid: z.boolean().optional(),
@@ -52,6 +54,7 @@ function presentStaff(staff: any) {
     )[0];
   return {
     ...staff,
+    salaryPayDay: staff.salaryPayDay ?? 1,
     currentMonthlySalary: current?.amount ?? null,
     currentSalaryEffectiveFrom: current?.effectiveFrom ?? null,
   };
@@ -78,6 +81,7 @@ router.post("/", async (req, res, next) => {
       name: input.name,
       nameKey: input.name.toLowerCase(),
       joinDate: input.joinDate,
+      salaryPayDay: input.salaryPayDay,
       isActive: true,
       weeklyOffDays: input.weeklyOffDays,
       weeklyOffPaid: input.weeklyOffPaid,
@@ -120,6 +124,7 @@ router.patch("/:id", async (req, res, next) => {
       row.nameKey = input.name.toLowerCase();
     }
     if (input.joinDate !== undefined) row.joinDate = input.joinDate;
+    if (input.salaryPayDay !== undefined) row.salaryPayDay = input.salaryPayDay;
     if (input.endDate !== undefined) {
       row.endDate = input.endDate || undefined;
       if (input.endDate && input.endDate <= householdTodayKey())

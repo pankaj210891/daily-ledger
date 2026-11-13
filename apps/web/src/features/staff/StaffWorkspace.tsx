@@ -110,6 +110,9 @@ export function StaffWorkspace({
                           : `${money(member.currentMonthlySalary)} / month`}
                       </strong>
                       <small>
+                        Salary payday: day {member.salaryPayDay} each month
+                      </small>
+                      <small>
                         {member.weeklyOffDays.length
                           ? `${member.weeklyOffDays.map((day) => week[day].label).join(", ")} · ${member.weeklyOffPaid ? "paid" : "unpaid"}`
                           : "No weekly off configured"}

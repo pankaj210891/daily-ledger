@@ -49,6 +49,9 @@ export function MobileStaffProfiles({
                     : `Monthly salary ${money(member.currentMonthlySalary)}`}
                 </small>
                 <small>
+                  Salary payday: day {member.salaryPayDay} each month
+                </small>
+                <small>
                   {member.weeklyOffDays.length
                     ? `${member.weeklyOffDays.map((day) => week[day].label).join(", ")} · ${member.weeklyOffPaid ? "paid" : "unpaid"} weekly offs`
                     : "No weekly off configured"}
