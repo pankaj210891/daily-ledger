@@ -83,7 +83,7 @@ Signup creates a household and its owner. Refresh tokens are random opaque value
 
 ## Vercel deployment
 Create two Vercel projects from this repository:
-1. Web project root directory: `apps/web`; build command `npm run build:web` (configure workspace install/build appropriately); output directory `dist`. Set `VITE_API_URL` to the deployed API's HTTPS base URL at build time.
+1. Web project root directory: `apps/web`; build command `npm run build:web` (configure workspace install/build appropriately); output directory `dist`. The `apps/web/vercel.json` rewrite sends client-side routes such as `/overview` to the SPA entrypoint so refreshing a route works. Set `VITE_API_URL` to the deployed API's HTTPS base URL at build time.
 2. API project root directory: `apps/api`; use `vercel.json` and `api/index.ts` as the serverless entrypoint. Set `MONGODB_URI`, `JWT_ACCESS_SECRET`, `JWT_ACCESS_TTL`, `REFRESH_TOKEN_TTL_DAYS`, `COOKIE_NAME`, `WEB_ORIGIN`, `RESEND_API_KEY`, `EMAIL_FROM`, `NODE_ENV=production`.
 
 For the npm workspaces monorepo, enable Vercel's workspace/root-directory support and ensure shared workspace packages are included when introduced. Test preview deployments before production. Vercel Functions are request-driven: do not run a persistent Express listener or in-memory scheduler there. Scheduled reminders need Vercel Cron or another external scheduler and idempotent database jobs.

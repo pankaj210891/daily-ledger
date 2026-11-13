@@ -688,7 +688,7 @@
   .overview-mobile-panels{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
   .overview-mobile-panels>.panel{min-width:0;padding:14px 12px;border-radius:14px;}
   .overview-mobile-panels>.spending-panel,.overview-mobile-panels>.category-panel{grid-column:auto;}
-  .overview-mobile-panels>.reminders-panel,.overview-mobile-panels>.transactions-panel{grid-column:1/-1;}
+  .overview-mobile-panels>.operations-panel,.overview-mobile-panels>.reminders-panel,.overview-mobile-panels>.transactions-panel{grid-column:1/-1;}
   .overview-mobile-panels .panel-heading h2{font-size:13px;}
   .overview-mobile-panels .panel-heading p{font-size:10px;}
   .overview-mobile-panels .category-panel .text-link{display:none;}
