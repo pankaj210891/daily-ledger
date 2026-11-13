@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import { requireAuth } from "../middleware/auth.js";
 import { LedgerEntry } from "../models/LedgerEntry.js";
 import { RecurringExpense } from "../models/RecurringExpense.js";
-import { isDateKey } from "../lib/dateKeys.js";
+import { householdTodayKey, isDateKey } from "../lib/dateKeys.js";
 
 const router = Router();
 const date = z.string().refine(isDateKey, "Use a valid YYYY-MM-DD date");
@@ -56,6 +56,7 @@ router.post("/generate", async (req, res, next) => {
     const [year, monthNumber] = month.split("-").map(Number);
     const lastDay = new Date(Date.UTC(year, monthNumber, 0)).getUTCDate();
     const from = `${month}-01`, to = `${month}-${String(lastDay).padStart(2, "0")}`;
+    const today = householdTodayKey();
     const householdId = req.auth!.householdId;
     const policies = await RecurringExpense.find({ householdId, isActive: true, startsOn: { $lte: to }, $or: [{ endsOn: { $exists: false } }, { endsOn: null }, { endsOn: { $gte: from } }] }).lean();
     const occurrences = [];
@@ -64,11 +65,17 @@ router.post("/generate", async (req, res, next) => {
       const occurrenceDate = `${month}-${String(day).padStart(2, "0")}`;
       if (occurrenceDate < policy.startsOn || (policy.endsOn && occurrenceDate > policy.endsOn)) continue;
       const recurrenceKey = `${policy._id}:${month}`;
+      const status = occurrenceDate <= today ? "pending" : "upcoming";
       const entry = await LedgerEntry.findOneAndUpdate(
         { householdId, recurrenceKey },
-        { $setOnInsert: { householdId, type: "expense", name: policy.name, category: policy.category, amount: policy.amount, date: new Date(`${occurrenceDate}T00:00:00.000Z`), status: "upcoming", notes: policy.notes, recurringExpenseId: policy._id, recurrenceKey } },
+        { $setOnInsert: { householdId, type: "expense", name: policy.name, category: policy.category, amount: policy.amount, date: new Date(`${occurrenceDate}T00:00:00.000Z`), status, notes: policy.notes, recurringExpenseId: policy._id, recurrenceKey } },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       ).lean();
+      if (!entry || Array.isArray(entry)) continue;
+      if (status === "pending" && entry?.status === "upcoming") {
+        await LedgerEntry.updateOne({ _id: entry._id, householdId, status: "upcoming" }, { $set: { status: "pending" } });
+        entry.status = "pending";
+      }
       occurrences.push(entry);
     }
     res.json({ data: { month, occurrences, count: occurrences.length } });
