@@ -3,6 +3,7 @@
 A TypeScript monorepo for Daily Ledger: React/Vite web, Node.js/Express REST API, MongoDB/Mongoose, and a planned React Native client.
 
 ## Decisions
+
 - Email/password authentication first; Google sign-in can be added later.
 - One household owner per signup today; schema includes household ownership so family membership can be added later.
 - Vercel hosts the web app and Express-compatible serverless API.
@@ -10,26 +11,32 @@ A TypeScript monorepo for Daily Ledger: React/Vite web, Node.js/Express REST API
 - All business rules will live in the API/shared packages, not duplicated in web/mobile.
 
 ## Requirements
+
 - Node.js 20+
 - npm 10+
 - MongoDB local instance or MongoDB Atlas free cluster
 
 ## Local setup
+
 ```bash
 npm install
 cp apps/api/.env.example apps/api/.env
 # Set MONGODB_URI and a random JWT_ACCESS_SECRET (32+ chars)
 npm run dev:api
 ```
+
 API health: `http://localhost:4000/api/v1/health`
 
 Web app:
+
 ```bash
 npm run dev:web
 ```
+
 Open `http://localhost:5173`. Set `VITE_API_URL=http://localhost:4000/api/v1` in `apps/web/.env.local` if needed.
 
 ## Authentication endpoints
+
 - `POST /api/v1/auth/signup` `{ name, email, password, householdName? }`
 - `POST /api/v1/auth/signin` `{ email, password }`
 - `POST /api/v1/auth/forgot-password` `{ email }` (always returns a generic response)
@@ -40,6 +47,7 @@ Open `http://localhost:5173`. Set `VITE_API_URL=http://localhost:4000/api/v1` in
 - `GET /api/v1/health`
 
 ## Ledger REST API
+
 The web app signs in or creates an account, then sends a bearer access token with each request. Ledger records are always scoped to the signed-in household.
 
 - `GET /api/v1/entries` (optional `?type=delivery|product|expense|bill|staff|attendance|salary`)
@@ -50,16 +58,18 @@ The web app signs in or creates an account, then sends a bearer access token wit
 Entry types share fields for name, category, amount, quantity/unit, date, due date, status and notes. These remain useful for manual and legacy records. Product schedules, delivery tracking and calculated monthly bills use dedicated household-scoped API resources instead; generic entries are not imported into product bills. See [docs/api.md](docs/api.md) for the domain API contract and business rules.
 
 ## Product deliveries and monthly bills
+
 - `GET/POST /api/v1/products`, `PATCH /api/v1/products/:id`, and `POST /api/v1/products/:id/rates` manage products, per-time-slot schedules, expected quantities, and append-only effective-dated rates.
 - `POST /api/v1/scheduled-deliveries/generate` and `GET /api/v1/scheduled-deliveries?from=YYYY-MM-DD&to=YYYY-MM-DD` generate/list scheduled instances.
 - `POST/PATCH/DELETE /api/v1/scheduled-deliveries/:id/deliveries...` records partial/full delivery parts; dedicated actions record zero consumption, skip, or cancel.
 - `POST /api/v1/bills/prepare` and `GET /api/v1/bills?month=YYYY-MM` calculate delivered charges with the rate effective on each scheduled date. Open quantity is an estimate; late delivery remains assigned to its original scheduled date and month.
 
 ## Staff, attendance and salary
+
 - `GET/POST /api/v1/staff`, `PATCH /api/v1/staff/:id`, and `POST /api/v1/staff/:id/salary-revisions` manage linked staff profiles, weekly-off policies, and effective-dated pay.
 - `GET /api/v1/attendance?month=YYYY-MM&staffId=:id` and `PUT /api/v1/attendance` load and save one attendance status for each staff/date. PTO and LOP require a reason.
 - `GET/PUT/DELETE /api/v1/holidays` maintains a household-wide holiday calendar; listed holidays count as paid unless attendance is explicitly overridden.
-- `GET /api/v1/salaries?month=YYYY-MM` calculates calendar-day proration and attendance-based deductions. Unmarked past/current dates count as present; future dates remain pending in the gross estimate without being counted present or deducted. Explicit absences and LOP deduct one daily rate.
+- `GET /api/v1/salaries?month=YYYY-MM` calculates calendar-day proration and attendance-based deductions, returning saved statements and transactions where present. `POST /api/v1/salaries/:staffId/finalize` locks a completed month snapshot; `POST /api/v1/salaries/:staffId/transactions` records advances, payments, or signed adjustments against finalized statements. Advances and payments reduce the balance due.
 
 For local development, copy `apps/api/.env.example` to `apps/api/.env`, put the MongoDB URI and a private random 32+ character JWT secret there, then run `npm run dev:api` and `npm run dev:web` in separate terminals. Open `http://localhost:5173`. If using a different web origin, set `WEB_ORIGIN` in the API environment.
 
@@ -70,6 +80,7 @@ Sign-in passwords appear in the request body in the browser's own developer tool
 Signup creates a household and its owner. Refresh tokens are random opaque values; only SHA-256 hashes are stored. Passwords use Argon2id. Access JWTs are short-lived. The refresh cookie is HttpOnly, Secure in production and SameSite=Lax.
 
 ## Security notes / production checklist
+
 - Set a unique 32+ character `JWT_ACCESS_SECRET`; never commit secrets.
 - Configure exact `WEB_ORIGIN`; do not use wildcard credentialed CORS.
 - Deploy only behind HTTPS.
@@ -82,14 +93,18 @@ Signup creates a household and its owner. Refresh tokens are random opaque value
 - The current signup flow creates household and user in separate writes. Use a MongoDB transaction (replica set, as Atlas provides) for production hardening so partial signup cannot leave orphan records.
 
 ## Vercel deployment
+
 Create two Vercel projects from this repository:
+
 1. Web project root directory: `apps/web`; build command `npm run build:web` (configure workspace install/build appropriately); output directory `dist`. The `apps/web/vercel.json` rewrite sends client-side routes such as `/overview` to the SPA entrypoint so refreshing a route works. Set `VITE_API_URL` to the deployed API's HTTPS base URL at build time.
 2. API project root directory: `apps/api`; use `vercel.json` and `api/index.ts` as the serverless entrypoint. Set `MONGODB_URI`, `JWT_ACCESS_SECRET`, `JWT_ACCESS_TTL`, `REFRESH_TOKEN_TTL_DAYS`, `COOKIE_NAME`, `WEB_ORIGIN`, `RESEND_API_KEY`, `EMAIL_FROM`, `NODE_ENV=production`.
 
 For the npm workspaces monorepo, enable Vercel's workspace/root-directory support and ensure shared workspace packages are included when introduced. Test preview deployments before production. Vercel Functions are request-driven: do not run a persistent Express listener or in-memory scheduler there. Scheduled reminders need Vercel Cron or another external scheduler and idempotent database jobs.
 
 ## Web UI preview
-The web workspace includes a mobile-first household dashboard, product and rate management, per-slot schedule setup, delivery part tracking, calculated monthly bills, linked staff profiles, attendance, and live salary calculations. Earlier generic staff and salary ledger entries remain separate; legacy staff entries are copied into staff profiles on first read, and unambiguous legacy attendance is linked by exact staff name. Finalized salary statements, payment history and recurring expense policies remain future work.
+
+The web workspace includes a mobile-first household dashboard, product and rate management, per-slot schedule setup, delivery part tracking, calculated monthly bills, linked staff profiles, attendance, and salary statement finalization, advances, payments, and adjustments. Earlier generic staff and salary ledger entries remain separate; legacy staff entries are copied into staff profiles on first read, and unambiguous legacy attendance is linked by exact staff name. Recurring expense policies remain future work.
 
 ## Current scope
-This is an incremental household ledger, not the complete planned product. Dedicated product, scheduled delivery, monthly bill, staff, attendance and live salary calculation APIs are implemented. Finalized salary statements, payment history, recurring expenses, and the React Native app remain future work.
+
+This is an incremental household ledger, not the complete planned product. Dedicated product, scheduled delivery, monthly bill, staff, attendance, live salary calculation, finalized salary statements, and salary transaction APIs are implemented. Recurring expenses and the React Native app remain future work.
