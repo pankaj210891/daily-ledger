@@ -202,8 +202,10 @@ export function useLedgerApp() {
     const due = String(form.get("dueDate") || "");
     if (due) payload.dueDate = due;
     try {
-      if (editing) await api.updateEntry(editing._id, payload);
-      else await api.createEntry(payload);
+      if (editing) {
+        const { type: _type, ...patch } = payload;
+        await api.updateEntry(editing._id, patch);
+      } else await api.createEntry(payload);
       setFormOpen(false);
       setEditing(null);
       await load();

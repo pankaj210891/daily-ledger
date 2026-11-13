@@ -396,7 +396,7 @@ export const api = {
         body: JSON.stringify(entry),
       })
     ).data,
-  updateEntry: async (id: string, patch: Partial<EntryInput>) =>
+  updateEntry: async (id: string, patch: Omit<Partial<EntryInput>, "type">) =>
     (
       await request<{ data: Entry }>(`/entries/${id}`, {
         method: "PATCH",
