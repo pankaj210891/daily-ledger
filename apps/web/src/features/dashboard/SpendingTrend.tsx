@@ -16,20 +16,21 @@ export function SpendingTrend({
 }) {
   const months = useMemo(() => {
     const [year, month] = selectedMonth.split("-").map(Number);
-    return Array.from({ length: 6 }, (_, i) => {
+    const result = Array.from({ length: 6 }, (_, i) => {
       const d = new Date(Date.UTC(year, month - 1 - 5 + i, 15, 12));
       return { key: householdMonthKey(d), label: monthLabel(d), total: 0 };
     });
-  }, [selectedMonth]);
-  for (const e of entries) {
-    if (
-      !["expense", "bill", "salary", "delivery"].includes(e.type) ||
-      ["pending", "upcoming"].includes(e.status)
-    )
-      continue;
-    const slot = months.find((m) => m.key === householdMonthKey(e.date));
-    if (slot) slot.total += e.amount;
-  }
+    for (const e of entries) {
+      if (
+        !["expense", "bill", "salary", "delivery"].includes(e.type) ||
+        ["pending", "upcoming"].includes(e.status)
+      )
+        continue;
+      const slot = result.find((m) => m.key === householdMonthKey(e.date));
+      if (slot) slot.total += e.amount;
+    }
+    return result;
+  }, [entries, selectedMonth]);
   const max = Math.max(1, ...months.map((m) => m.total));
   return (
     <section className="panel spending-panel">
