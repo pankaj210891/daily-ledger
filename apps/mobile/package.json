@@ -3,7 +3,10 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@daily-ledger/data": "^0.1.1",
+    "@daily-ledger/shared": "^0.1.0",
     "@expo/ui": "~58.0.28",
+    "@tanstack/react-query": "^5.0.0",
     "expo": "^58.0.0",
     "expo-constants": "~58.0.16",
     "expo-device": "~58.0.5",

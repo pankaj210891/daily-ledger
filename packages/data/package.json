@@ -1,0 +1,41 @@
+{
+  "name": "@daily-ledger/data",
+  "version": "0.1.1",
+  "license": "MIT",
+  "type": "module",
+  "description": "Shared TanStack Query keys, hooks, and client defaults for Daily Ledger apps",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pankaj210891/daily-ledger.git",
+    "directory": "packages/data"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "@types/react": "^19.2.18"
+  }
+}

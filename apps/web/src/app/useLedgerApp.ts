@@ -1,13 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import {
-  api,
-  AttendanceRecord,
-  Entry,
-  EntryInput,
-  Product,
-  StaffMember,
-  SessionExpiredError,
-} from "../api";
+import { ledgerQueries } from "../queries";
+import { api, Entry, EntryInput, SessionExpiredError } from "../api";
 import { householdMonthKey } from "../lib/formatters";
 import { useOverviewData } from "./useOverviewData";
 import { useSession } from "./useSession";
@@ -26,14 +19,7 @@ export function useLedgerApp() {
   );
   const [search, setSearch] = useState(""),
     [statusFilter, setStatusFilter] = useState("all"),
-    [entries, setEntries] = useState<Entry[]>([]),
-    [products, setProducts] = useState<Product[]>([]),
-    [staff, setStaff] = useState<StaffMember[]>([]),
-    [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>(
-      [],
-    ),
     [productCreateRequested, setProductCreateRequested] = useState(false),
-    [entriesLoading, setEntriesLoading] = useState(false),
     [error, setError] = useState(""),
     [authNotice, setAuthNotice] = useState(""),
     [formOpen, setFormOpen] = useState(false),
@@ -52,6 +38,26 @@ export function useLedgerApp() {
     );
   const [editing, setEditing] = useState<Entry | null>(null);
   const session = useSession();
+  const entriesQuery = ledgerQueries.useEntries(Boolean(session.user));
+  const productsQuery = ledgerQueries.useProducts(Boolean(session.user));
+  const staffQuery = ledgerQueries.useStaff(Boolean(session.user));
+  const currentMonth = householdMonthKey(new Date());
+  const attendanceQuery = ledgerQueries.useAttendance(
+    currentMonth,
+    undefined,
+    Boolean(session.user),
+  );
+  const entries = entriesQuery.data ?? [];
+  const products = productsQuery.data ?? [];
+  const staff = staffQuery.data ?? [];
+  const attendanceRecords = attendanceQuery.data ?? [];
+  const entriesLoading = [
+    entriesQuery,
+    productsQuery,
+    staffQuery,
+    attendanceQuery,
+  ].some((query) => query.isLoading);
+  const invalidateLedger = ledgerQueries.useInvalidateLedger();
   const overview = useOverviewData({
     user: session.user,
     month: selectedMonth,
@@ -82,33 +88,26 @@ export function useLedgerApp() {
     setToast(s);
     window.setTimeout(() => setToast(""), 2800);
   };
-  const load = async () => {
-    setEntriesLoading(true);
-    try {
-      const currentMonth = householdMonthKey(new Date());
-      const [ledgerEntries, productEntries, staffEntries] = await Promise.all([
-        api.entries(),
-        api.products(),
-        api.staff(),
-      ]);
-      const attendanceEntries = await api.attendance(currentMonth);
-      setEntries(ledgerEntries);
-      setProducts(productEntries);
-      setStaff(staffEntries);
-      setAttendanceRecords(attendanceEntries);
-      setError("");
-    } catch (e) {
-      if (e instanceof SessionExpiredError) {
-        session.expireSession(e.message);
-      } else
-        setError(e instanceof Error ? e.message : "Unable to load entries");
-    } finally {
-      setEntriesLoading(false);
-    }
-  };
   useEffect(() => {
-    if (session.user) void load();
-  }, [session.user]);
+    const issue = [
+      entriesQuery.error,
+      productsQuery.error,
+      staffQuery.error,
+      attendanceQuery.error,
+    ].find(Boolean);
+    if (issue instanceof SessionExpiredError)
+      session.expireSession(issue.message);
+    else if (issue instanceof Error) setError(issue.message);
+  }, [
+    entriesQuery.error,
+    productsQuery.error,
+    staffQuery.error,
+    attendanceQuery.error,
+  ]);
+  const load = async () => {
+    setError("");
+    await invalidateLedger();
+  };
   const sectionTypes =
     typesFor[active] || (typeFor[active] ? [typeFor[active]] : undefined);
   const filtered = useMemo(

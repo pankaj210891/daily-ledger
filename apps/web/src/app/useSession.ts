@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   api,
   clearSessionMarker,
@@ -8,6 +9,7 @@ import {
 } from "../api";
 
 export function useSession() {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [householdId, setHouseholdId] = useState("");
@@ -24,13 +26,17 @@ export function useSession() {
     [],
   );
 
-  const expireSession = useCallback((message: string) => {
-    setToken(null);
-    setUser("");
-    setUserEmail("");
-    setHouseholdId("");
-    setAuthNotice(message);
-  }, []);
+  const expireSession = useCallback(
+    (message: string) => {
+      void queryClient.clear();
+      setToken(null);
+      setUser("");
+      setUserEmail("");
+      setHouseholdId("");
+      setAuthNotice(message);
+    },
+    [queryClient],
+  );
 
   async function signOut() {
     try {
@@ -38,6 +44,7 @@ export function useSession() {
     } catch {
       // Clear local session state even when the API is unavailable.
     } finally {
+      queryClient.clear();
       setToken(null);
       clearSessionMarker();
       setUser("");

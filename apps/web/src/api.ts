@@ -1,3 +1,14 @@
+import type {
+  AttendanceStatus,
+  ScheduleFrequency,
+  TimeSlot,
+} from "@daily-ledger/shared";
+export type {
+  AttendanceStatus,
+  ScheduleFrequency,
+  TimeSlot,
+} from "@daily-ledger/shared";
+
 const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
 function apiBase() {
   const value =
@@ -52,7 +63,6 @@ export const clearSessionMarker = () => {
     /* Marker is optional. */
   }
 };
-
 export class SessionExpiredError extends Error {
   constructor() {
     super("Your session has expired. Sign in again.");
@@ -85,8 +95,6 @@ export interface EntryInput {
   status?: string;
   notes?: string;
 }
-export type TimeSlot = "morning" | "afternoon" | "evening" | "night";
-export type ScheduleFrequency = "daily" | "selected_weekdays" | "every_x_days";
 export interface ProductSchedule {
   _id?: string;
   timeSlot: TimeSlot;
@@ -241,8 +249,6 @@ export interface StaffMember {
   currentMonthlySalary: number | null;
   currentSalaryEffectiveFrom: string | null;
 }
-export type AttendanceStatus =
-  "present" | "absent" | "pto" | "lop" | "weekly_off" | "holiday";
 export interface AttendanceRecord {
   _id: string;
   staffId: string;

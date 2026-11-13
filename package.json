@@ -5,16 +5,20 @@
   "allowScripts": {
     "argon2@0.41.1": true
   },
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": ["apps/*"],
   "scripts": {
     "dev:web": "npm run dev --workspace=@daily-ledger/web",
     "dev:mobile": "npm run start --workspace=@daily-ledger/mobile",
     "dev:api": "npm run dev --workspace=@daily-ledger/api",
-    "build:web": "npm run build --workspace=@daily-ledger/web",
+    "build:packages": "npm run build --prefix=packages/shared && npm run build --prefix=packages/data",
+    "build:web": "npm run build:packages && npm run build --workspace=@daily-ledger/web",
     "build:api": "npm run build --workspace=@daily-ledger/api",
     "test:api": "npm run test --workspace=@daily-ledger/api",
     "build": "npm run build:web && npm run build:api",
-    "typecheck": "npm run typecheck --workspace=@daily-ledger/web && npm run typecheck --workspace=@daily-ledger/api && npm run typecheck --workspace=@daily-ledger/mobile"
+    "typecheck": "npm run typecheck --prefix=packages/shared && npm run typecheck --prefix=packages/data && npm run build:packages && npm run typecheck --workspace=@daily-ledger/web && npm run typecheck --workspace=@daily-ledger/api && npm run typecheck --workspace=@daily-ledger/mobile"
   },
-  "devDependencies": { "@types/react": "^19.2.18", "typescript": "^5.7.3" }
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "typescript": "^5.7.3"
+  }
 }

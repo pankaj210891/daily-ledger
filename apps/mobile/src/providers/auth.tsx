@@ -1,30 +1,70 @@
-import { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type PropsWithChildren,
+} from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { api, type User } from "@/lib/api";
 
 type AuthContextValue = {
   user: User | null;
   ready: boolean;
   signIn(email: string, password: string): Promise<void>;
-  signUp(name: string, email: string, password: string, householdName?: string): Promise<void>;
+  signUp(
+    name: string,
+    email: string,
+    password: string,
+    householdName?: string,
+  ): Promise<void>;
   signOut(): Promise<void>;
   requestPasswordReset(email: string): Promise<string>;
 };
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
+  const queryClient = useQueryClient();
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    api.initializeSession().then(setUser).catch(() => setUser(null)).finally(() => setReady(true));
+    api
+      .initializeSession()
+      .then(setUser)
+      .catch(() => setUser(null))
+      .finally(() => setReady(true));
   }, []);
-  const value = useMemo<AuthContextValue>(() => ({
-    user,
-    ready,
-    signIn: async (email, password) => { setUser(await api.signIn(email.trim(), password)); },
-    signUp: async (name, email, password, householdName) => { setUser(await api.signUp(name.trim(), email.trim(), password, householdName?.trim())); },
-    signOut: async () => { try { await api.signOut(); } finally { setUser(null); } },
-    requestPasswordReset: async (email) => (await api.forgotPassword(email.trim())).message,
-  }), [user, ready]);
+  const value = useMemo<AuthContextValue>(
+    () => ({
+      user,
+      ready,
+      signIn: async (email, password) => {
+        setUser(await api.signIn(email.trim(), password));
+      },
+      signUp: async (name, email, password, householdName) => {
+        setUser(
+          await api.signUp(
+            name.trim(),
+            email.trim(),
+            password,
+            householdName?.trim(),
+          ),
+        );
+      },
+      signOut: async () => {
+        try {
+          await api.signOut();
+        } finally {
+          queryClient.clear();
+          setUser(null);
+        }
+      },
+      requestPasswordReset: async (email) =>
+        (await api.forgotPassword(email.trim())).message,
+    }),
+    [user, ready, queryClient],
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
