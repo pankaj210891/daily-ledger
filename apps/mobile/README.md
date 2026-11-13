@@ -5,7 +5,7 @@ Native iOS and Android app built with Expo and React Native. It uses the existin
 ## Run on iPhone
 
 1. Install Expo Go from the App Store.
-2. Copy .env.example to .env and set EXPO_PUBLIC_API_URL to the API host's LAN address, for example http://192.168.1.42:4000/api/v1.
+2. Copy .env.example to .env. It points to the deployed API by default; set EXPO_PUBLIC_API_URL only if you want to use a different API host.
 3. Keep the iPhone and the development computer on the same Wi-Fi network. Make sure the API is running and reachable on port 4000.
 4. From the repository root run npm run dev:mobile, then scan the QR code with the iPhone Camera or Expo Go.
 

@@ -7,7 +7,8 @@ import type {
 export type { AttendanceStatus } from "@daily-ledger/shared";
 
 const apiBase =
-  process.env.EXPO_PUBLIC_API_URL?.trim().replace(/\/$/, "") || "";
+  process.env.EXPO_PUBLIC_API_URL?.trim().replace(/\/$/, "") ||
+  "https://daily-ledger-api-xi.vercel.app/api/v1";
 const refreshKey = "daily-ledger-mobile-refresh";
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
@@ -183,7 +184,7 @@ type Response<T> = { data: T };
 function baseUrl() {
   if (!apiBase)
     throw new Error(
-      "Set EXPO_PUBLIC_API_URL in apps/mobile/.env to your API address. For iPhone testing on Wi-Fi, use your Mac's local network IP and port 4000.",
+      "Set EXPO_PUBLIC_API_URL in apps/mobile/.env to your API address, such as https://daily-ledger-api-xi.vercel.app/api/v1.",
     );
   return apiBase;
 }
