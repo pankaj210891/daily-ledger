@@ -1,18 +1,12 @@
 # Development guidelines
 
-## Formatting
+## Git workflow
 
-- Format written code with Prettier, using the repository's configuration when present and Prettier defaults otherwise.
+- For every task that changes repository files, start from `develop` and create a new task branch before editing. Use a conventional prefix such as `feat/`, `fix/`, `chore/`, or `enhancement/` and a concise kebab-case name.
+- Read `.agents/skills/git-workflow/SKILL.md` before branching, committing, pushing, or merging.
+- Commit task changes on the task branch. When asked to commit and push, push the task branch, merge it into `develop`, and push the updated `develop`. Never merge into `main` unless the user asks or requests a production deployment.
+- Preserve unrelated working-tree changes. Stage only files belonging to the task. Resolve merge conflicts carefully, retaining all valid work, and verify the resulting diff before completing the merge.
 
-## Component design
+## Code and component guidelines
 
-- Keep components focused. A component should generally manage complex state or render detailed UI, but rarely both.
-- Consider splitting when a component has five or more state/effect hooks, deeply nested JSX or complex inline conditionals, or repeated markup that can become a reusable child component. Treat these as signals to review the design, not automatic rules.
-- Extract stateful logic, API calls, and event handlers into custom hooks when that makes the component easier to understand.
-- Extract complex UI into child components that receive data through props. Move pure transformations, formatting, and validation helpers into utilities when they are reusable or distract from the component's main job.
-
-## Component size
-
-- Aim for 20–80 lines for simple, stateless UI components such as buttons, cards, and badges.
-- Standard feature components with local state, handlers, or conditional rendering commonly fit in 50–200 lines.
-- Review files above 300 lines for unrelated responsibilities and consider splitting them; files approaching or exceeding 500 lines are a strong refactoring signal. Line counts are guidance, not a substitute for cohesion and readability.
+- Read `.agents/skills/component-guidelines/SKILL.md` when formatting code or designing and sizing components.
