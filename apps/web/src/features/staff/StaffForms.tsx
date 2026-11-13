@@ -16,6 +16,7 @@ export function StaffForm({
     [joinDate, setJoinDate] = useState(
       staff?.joinDate || householdDateKey(new Date()),
     ),
+    [salaryPayDay, setSalaryPayDay] = useState(String(staff?.salaryPayDay ?? 1)),
     [endDate, setEndDate] = useState(staff?.endDate || ""),
     [weeklyOffDays, setWeeklyOffDays] = useState(staff?.weeklyOffDays || []),
     [weeklyOffPaid, setWeeklyOffPaid] = useState(staff?.weeklyOffPaid ?? true),
@@ -33,6 +34,7 @@ export function StaffForm({
         await api.updateStaff(staff._id, {
           name,
           joinDate,
+          salaryPayDay: Number(salaryPayDay),
           ...(staff.isActive ? { endDate: endDate || null } : {}),
           weeklyOffDays,
           weeklyOffPaid,
@@ -41,6 +43,7 @@ export function StaffForm({
         await api.createStaff({
           name,
           joinDate,
+          salaryPayDay: Number(salaryPayDay),
           monthlySalary,
           weeklyOffDays,
           weeklyOffPaid,
@@ -106,6 +109,17 @@ export function StaffForm({
               onChange={(event) => setJoinDate(event.target.value)}
             />
           </label>
+          <label>
+            Salary payday (day of month)
+            <input
+              required
+              type="number"
+              min="1"
+              max="31"
+              value={salaryPayDay}
+              onChange={(event) => setSalaryPayDay(event.target.value)}
+            />
+          </label>
           {staff?.isActive ? (
             <label>
               Leaving date (optional)
@@ -163,7 +177,9 @@ export function StaffForm({
         <p className="form-hint">
           Absence and LOP deduct one calendar-day rate. PTO and listed household
           holidays are paid. Weekly-off changes take effect today; salary
-          changes are recorded separately with an effective date.
+          changes are recorded separately with an effective date. Payday is
+          separate from the joining date; a day 7 payday can be recorded for
+          salary earned in the previous month.
         </p>
         {error && (
           <div className="form-error" role="alert">

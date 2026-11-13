@@ -172,6 +172,7 @@ export async function calculateMonth(householdId: string, month: string) {
         month,
         joinDate: staff.joinDate,
         endDate: staff.endDate || null,
+        salaryPayDay: staff.salaryPayDay ?? 1,
         weeklyOffDays: staff.weeklyOffDays || [],
         weeklyOffPaid: staff.weeklyOffPaid,
         daysInMonth,
@@ -241,6 +242,7 @@ export function presentStatement(calculation: any, record: any) {
   const amountDue = Math.max(0, roundCurrency(adjustedPayable - amountPaid));
   return {
     ...base,
+    salaryPayDay: base.salaryPayDay ?? calculation.salaryPayDay ?? 1,
     finalized: Boolean(record?.finalizedAt),
     finalizedAt: record?.finalizedAt || null,
     transactions,

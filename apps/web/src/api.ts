@@ -247,6 +247,7 @@ export interface StaffMember {
   _id: string;
   name: string;
   joinDate: string;
+  salaryPayDay: number;
   endDate?: string | null;
   isActive: boolean;
   weeklyOffDays: number[];
@@ -309,6 +310,7 @@ export interface SalaryCalculation {
   isActive: boolean;
   month: string;
   joinDate: string;
+  salaryPayDay: number;
   endDate: string | null;
   weeklyOffDays: number[];
   weeklyOffPaid: boolean;
@@ -432,6 +434,7 @@ export const api = {
   createStaff: async (input: {
     name: string;
     joinDate: string;
+    salaryPayDay: number;
     monthlySalary: number;
     weeklyOffDays: number[];
     weeklyOffPaid: boolean;
@@ -447,6 +450,7 @@ export const api = {
     patch: {
       name?: string;
       joinDate?: string;
+      salaryPayDay?: number;
       endDate?: string | null;
       isActive?: boolean;
       weeklyOffDays?: number[];

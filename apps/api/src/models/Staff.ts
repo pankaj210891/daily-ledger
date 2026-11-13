@@ -16,6 +16,7 @@ const staffSchema = new Schema({
   nameKey: { type: String, required: true, trim: true, lowercase: true },
   joinDate: { type: String, required: true, match: /^\d{4}-\d{2}-\d{2}$/ },
   endDate: { type: String, match: /^\d{4}-\d{2}-\d{2}$/ },
+  salaryPayDay: { type: Number, min: 1, max: 31, default: 1 },
   isActive: { type: Boolean, default: true, index: true },
   weeklyOffDays: { type: [Number], default: [] },
   weeklyOffPaid: { type: Boolean, default: true },

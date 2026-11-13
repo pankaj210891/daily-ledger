@@ -133,13 +133,6 @@ router.post("/:staffId/transactions", async (req, res, next) => {
       input = transactionSchema.parse(req.body),
       month = input.month;
     const { month: _month, ...transaction } = input;
-    if (input.date.slice(0, 7) !== month)
-      return res.status(400).json({
-        error: {
-          code: "DATE_MONTH_MISMATCH",
-          message: "Transaction date must be in the selected salary month",
-        },
-      });
     const staff = await Staff.findOne({
       _id: staffId,
       householdId: req.auth!.householdId,
