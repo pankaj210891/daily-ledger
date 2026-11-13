@@ -87,7 +87,7 @@ These routes require a bearer access token and derive the household from the ver
 | DELETE | `/recurring-expenses/:id` | Delete a policy; previously generated ledger entries remain |
 | POST | `/recurring-expenses/generate` | Idempotently create this month's upcoming expense entries (`{ "month": "YYYY-MM" }`) |
 
-Day 29–31 policies are scheduled on the last calendar day in shorter months. The start and optional end dates are inclusive. Paused policies are not generated. Generated entries use the existing `expense` ledger type and `upcoming` status, so normal ledger payment and reporting flows apply. Re-running preparation returns the existing occurrence instead of duplicating it.
+Day 29–31 policies are scheduled on the last calendar day in shorter months. The start and optional end dates are inclusive. Paused policies are not generated. Generated future entries use the existing `expense` ledger type and `upcoming` status; entries due today or earlier use `pending`. Re-running preparation returns the existing occurrence instead of duplicating it, and moves an unpaid upcoming occurrence to pending after its date passes.
 
 ## Web session behavior
 
