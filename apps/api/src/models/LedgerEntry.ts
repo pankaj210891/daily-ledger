@@ -11,8 +11,11 @@ const ledgerEntrySchema = new Schema({
   date: { type: Date, required: true, default: Date.now },
   dueDate: { type: Date },
   status: { type: String, enum: ["recorded", "pending", "paid", "upcoming", "present", "absent"], default: "recorded" },
-  notes: { type: String, trim: true, maxlength: 1000, default: "" }
+  notes: { type: String, trim: true, maxlength: 1000, default: "" },
+  recurringExpenseId: { type: Schema.Types.ObjectId, ref: "RecurringExpense" },
+  recurrenceKey: { type: String }
 }, { timestamps: true });
 
 ledgerEntrySchema.index({ householdId: 1, type: 1, date: -1 });
+ledgerEntrySchema.index({ householdId: 1, recurrenceKey: 1 }, { unique: true, partialFilterExpression: { recurrenceKey: { $type: "string" } } });
 export const LedgerEntry = mongoose.models.LedgerEntry || mongoose.model("LedgerEntry", ledgerEntrySchema);

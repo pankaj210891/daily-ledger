@@ -15,6 +15,7 @@ import staffRoutes from "./routes/staff.js";
 import attendanceRoutes from "./routes/attendance.js";
 import salaryRoutes from "./routes/salaries.js";
 import holidayRoutes from "./routes/holidays.js";
+import recurringExpenseRoutes from "./routes/recurringExpenses.js";
 import { errorHandler, notFound } from "./middleware/errors.js";
 
 const app = express();
@@ -50,6 +51,7 @@ app.use("/api/v1/staff", staffRoutes);
 app.use("/api/v1/attendance", attendanceRoutes);
 app.use("/api/v1/salaries", salaryRoutes);
 app.use("/api/v1/holidays", holidayRoutes);
+app.use("/api/v1/recurring-expenses", recurringExpenseRoutes);
 app.use("/api/v1/health", healthRoutes);
 app.use(notFound);
 app.use(errorHandler);
