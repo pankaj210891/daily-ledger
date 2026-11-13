@@ -11,6 +11,7 @@ import {
 import { householdMonthKey } from "../lib/formatters";
 import { LoadingState } from "../components/feedback/LoadingState";
 import { MobileExpensesWorkspace } from "./expenses/MobileExpensesWorkspace";
+import { RecurringExpensesPanel } from "./expenses/RecurringExpensesPanel";
 import { ProductsWorkspace } from "./products/ProductsWorkspace";
 import { DeliveriesWorkspace } from "./deliveries/DeliveriesWorkspace";
 import { MonthlyBillsWorkspace } from "./bills/MonthlyBillsWorkspace";
@@ -250,6 +251,7 @@ export function WorkspaceContent(props: {
         />
       ) : (
         <>
+          {active === "Household Expenses" && <RecurringExpensesPanel month={selectedMonth} onReload={onReloadEntries} />}
           <div className="desktop-expenses-flow">
             <section className="panel transactions-panel module-ledger">
               <div className="panel-heading">

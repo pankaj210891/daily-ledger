@@ -7,3 +7,4 @@ export { ScheduledDelivery } from "./ScheduledDelivery.js";
 export { Staff } from "./Staff.js";
 export { Attendance } from "./Attendance.js";
 export { HouseholdHoliday } from "./HouseholdHoliday.js";
+export { RecurringExpense } from "./RecurringExpense.js";
